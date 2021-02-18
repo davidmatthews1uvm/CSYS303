@@ -1,9 +1,9 @@
 import pandas as pd
+import data_utils
+
 from plot_utils import *
 
-
-df = pd.read_csv("../data/business-locations-us.txt", sep="\t")
-df.keys()
+df = data_utils.load_dataset()
 
 total_tokens = df.shape[0]
 
@@ -14,8 +14,7 @@ print("\section{}")
 print("\subsection{a}")
 print(f"The dataset contains $N = {total_tokens}$ tokens.")
 
-
-ZIPF_fig_file_name_base = "figs/q1_zipf"
+ZIPF_fig_file_name_base = "figs/2021_POCS_Assignment_2_q1_zipf_"
 FIG_EXTENSIONS = ["pdf", "png"]
 
 
