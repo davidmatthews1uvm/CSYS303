@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import scipy.stats
 
 df = pd.read_csv("../data/pinon_master.csv")
 df_sub = df[["nodeid", "parent", "diameter"]]
@@ -37,14 +38,21 @@ for parent_idx, children_sizes in parent_children_sizes.items():
     murray_law_data.append((parent_size_cubed, sum_children_sizes_cubed))
 
 x, y = zip(*murray_law_data)
+
+slope, intercept, rval, pval, stderr = scipy.stats.linregress(x,y)
+f = lambda x:  np.power(10, np.log10(x) * slope + intercept)
+print(slope, rval, pval)
+
 min_val = min(np.min(x), np.min(y))
 max_val = max((np.max(x), np.max(y)))
-plt.scatter(x, y, s=0.5, c="k", label="Observed Branching Structure")
 
+plt.scatter(x, y, s=0.5, c="k", label="Observed Branching Structure")
 plt.plot((min_val, max_val), (min_val, max_val), label="Murray's Law")
+# line_pts = (f(min_val), f(max_val))
+# plt.plot(line_pts, line_pts, label="Linear Regression", linestyle="dashed")
 plt.xlabel("$\sum_{i = 0}^{N} {r_i^3}$")
-plt.ylabel("$r_j^3$")
+plt.ylabel("$r_0^3$")
 plt.legend()
 plt.loglog()
-plt.savefig("figs/2021_POCS_Assignment_q4.pdf",bbox_inches="tight")
+plt.savefig("figs/2021_POCS_Assignment_3_q4.pdf",bbox_inches="tight")
 plt.show()
