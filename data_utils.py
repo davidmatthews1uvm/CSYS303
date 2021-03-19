@@ -3,7 +3,7 @@ import numpy as np
 
 import pandas as pd
 import geopandas
-# from joblib import Parallel, delayed
+from joblib import Parallel, delayed
 
 def load_dataset():
     print("Deprecated. Use load_business_data instead!")
@@ -37,6 +37,25 @@ def load_business_data_geo():
         pickle.dump(gdf, open("../data/business_locations_gdf_cache.pkl", "wb"))
     return gdf
 
+def load_census_block_data(block_id):
+    try:
+        census_blocks_df = geopandas.read_file("zip://../tmp/census/2010/tabblock/tl_2020_{:02d}_tabblock10.zip".format(block_id))
+
+        census_blocks_df_pop = geopandas.read_file("zip://../tmp/census/2010/tabblockpop/tabblock2010_{:02d}_pophu.zip".format(block_id))
+
+        census_blocks_df = census_blocks_df[["GEOID10", "ALAND10", "geometry"]]
+        census_blocks_df_pop = census_blocks_df_pop[["BLOCKID10", "POP10"]]
+        census_blocks_df_pop.rename(columns={"BLOCKID10":"GEOID10"}, inplace=True)
+
+        census_blocks = census_blocks_df.merge(census_blocks_df_pop)
+        return census_blocks
+    except:
+        return None
+
+def load_census_blocks_data():
+    return Parallel(n_jobs=-1)(delayed(load_census_block_data)(i) for i in range(10))
+
+    
 def load_census_tracts_data():
     try:
         gdf = pickle.load(open("../data/census_tracts_gdf_cache.pkl", "rb"))
