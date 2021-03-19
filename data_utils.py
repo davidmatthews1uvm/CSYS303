@@ -46,7 +46,7 @@ def load_census_block_data(block_id):
         census_blocks_df = census_blocks_df[["GEOID10", "ALAND10", "geometry"]]
         census_blocks_df_pop = census_blocks_df_pop[["BLOCKID10", "POP10"]]
         census_blocks_df_pop.rename(columns={"BLOCKID10":"GEOID10"}, inplace=True)
-
+        del census_blocks_df_pop, census_blocks_df
         census_blocks = census_blocks_df.merge(census_blocks_df_pop)
         return census_blocks
     except:
@@ -90,3 +90,22 @@ def load_census_data_joined():
         gdf =  geopandas.sjoin(business_gdf, census_gdf_sub, how="inner", op='intersects')
         pickle.dump(gdf, open("../data/joined_data_cache.pkl", "wb"))
     return gdf
+
+
+
+fips2state = {
+        "01": "AL", "02": "AK", "04": "AZ", "05": "AR", "06": "CA",
+        "08": "CO", "09": "CT", "10": "DE", "11": "DC", "12": "FL",
+        "13": "GA", "15": "HI", "16": "ID", "17": "IL", "18": "IN",
+        "19": "IA", "20": "KS", "21": "KY", "22": "LA", "23": "ME",
+        "24": "MD", "25": "MA", "26": "MI", "27": "MN", "28": "MS",
+        "29": "MO", "30": "MT", "31": "NE", "32": "NV", "33": "NH",
+        "34": "NJ", "35": "NM", "36": "NY", "37": "NC", "38": "ND",
+        "39": "OH", "40": "OK", "41": "OR", "42": "PA", "44": "RI",
+        "45": "SC", "46": "SD", "47": "TN", "48": "TX", "49": "UT",
+        "50": "VT", "51": "VA", "53": "WA", "54": "WV", "55": "WI",
+        "56": "WY",  # dictionary mapping FIPS code to state abbreviation
+    }
+
+state2fips = dict([(v,k) for (k,v) in fips2state.items()])
+
