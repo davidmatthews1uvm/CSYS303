@@ -3,6 +3,7 @@ import numpy as np
 
 import pandas as pd
 import geopandas
+# from joblib import Parallel, delayed
 
 def load_dataset():
     print("Deprecated. Use load_business_data instead!")
@@ -36,15 +37,26 @@ def load_business_data_geo():
         pickle.dump(gdf, open("../data/business_locations_gdf_cache.pkl", "wb"))
     return gdf
 
-def load_census_data():
+def load_census_tracts_data():
     try:
-        gdf = pickle.load(open("../data/census_gdf_cache.pkl", "rb"))
+        gdf = pickle.load(open("../data/census_tracts_gdf_cache.pkl", "rb"))
     except Exception as e:
         print("Failed to load from cache:", e)
         print("Falling back to loading from source")
         gdf = geopandas.read_file("zip://../data/Tract_2010Census_DP1.zip")
-        pickle.dump(gdf, open("../data/census_gdf_cache.pkl", "wb"))
+        pickle.dump(gdf, open("../data/census_tracts_gdf_cache.pkl", "wb"))
     return gdf
+
+def load_census_counties_data():
+    try:
+        gdf = pickle.load(open("../data/census_counties_gdf_cache.pkl", "rb"))
+    except Exception as e:
+        print("Failed to load from cache:", e)
+        print("Falling back to loading from source")
+        gdf = geopandas.read_file("zip://../data/County_2010Census_DP1.zip")
+        pickle.dump(gdf, open("../data/census_counties_gdf_cache.pkl", "wb"))
+    return gdf
+
 
 def load_census_data_joined():
     try:
@@ -52,7 +64,7 @@ def load_census_data_joined():
     except Exception as e:
         print("Failed to load from cache:", e)
         print("Falling back to loading from source. This may take a while.")
-        census_gdf = load_census_data()
+        census_gdf = load_census_tracts_data()
         business_gdf = load_business_data_geo()
         census_gdf_sub = census_gdf[["GEOID10", "geometry"]]
         
