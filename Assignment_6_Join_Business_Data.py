@@ -31,6 +31,7 @@ census_data = load_census_block_data(FIPS)
 joined_df = geopandas.sjoin(gdf, census_data, how="inner", op='intersects')
 business_df_to_save = joined_df[keys_to_save_business]
 census_df_to_save = joined_df[keys_to_save_census]
+census_df_to_save.drop_duplicates(inplace=True)
 
 pickle.dump(business_df_to_save, open("../data/Business_locations_split/GEOCODED_BUSINESS_DATA_GDF_FIPS_{:02d}.pkl".format(FIPS), "wb"))
 pickle.dump(census_df_to_save, open("../data/Business_locations_split/SUMMARY_CENSUS_DATA_GDF_FIPS_{:02d}.pkl".format(FIPS), "wb"))
