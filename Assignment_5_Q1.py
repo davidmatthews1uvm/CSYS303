@@ -3,14 +3,13 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
-from data_utils import  load_business_data_geo, load_census_data_joined, load_census_blocks_data, load_census_tracts_data, load_census_counties_data
+from data_utils import  load_business_data_geo, load_census_data_joined, load_census_tracts_data, load_census_counties_data
 
 
 business_gdf = load_business_data_geo()
 
 # business_census_gdf = load_census_data_joined()
 
-census_block_gdfs = load_census_blocks_data()
 census_tracts_gdf = load_census_tracts_data()
 census_counties_gdf = load_census_counties_data()
 
@@ -89,3 +88,5 @@ for category in [ "COFFEE HOUSES & CAFES"]: # ,"SCHOOL", "CHURCHES" ]:
 
 
 
+# joined_df_blocks = geopandas.sjoin(sub_df, census_blocks, how="inner", op='intersects')
+# joined_df_blocks
