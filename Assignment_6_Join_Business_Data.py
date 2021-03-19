@@ -3,31 +3,38 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
-import data_utils
-from data_utils import  load_business_data_geo, load_census_data_joined, load_census_tracts_data, load_census_counties_data, load_census_block_data
+from data_utils import load_census_block_data
 import pickle
 import argparse
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--FIPS", help="FIPS Code for the state to join", default=0, type=int)
+parser.add_argument("--FIPS", help="FIPS Code for the state to join", default=11, type=int)
 args = parser.parse_args()
 
+FIPS = args.FIPS
 
 # load business data
+gdf = pickle.load(open("../data/Business_locations_split/BUSINESS_DATA_GDF_FIPS_{:02d}.pkl".format(FIPS), "rb"))
+
+
+keys_to_save_business = set(gdf.keys())
+keys_to_save_business.add("GEOID10")
+keys_to_save_business.remove("geometry")
+keys_to_save_business = list(keys_to_save_business)
+
+keys_to_save_census = ["GEOID10", "ALAND10", "POP10"]
 
 # load census data
-census_data = load_census_block_data(args.FIPS)
+census_data = load_census_block_data(FIPS)
 
+joined_df = geopandas.sjoin(gdf, census_data, how="inner", op='intersects')
+business_df_to_save = joined_df[keys_to_save_business]
+census_df_to_save = joined_df[keys_to_save_census]
 
-# geocode the data.
+pickle.dump(business_df_to_save, open("../data/Business_locations_split/GEOCODED_BUSINESS_DATA_GDF_FIPS_{:02d}.pkl".format(FIPS), "wb"))
+pickle.dump(census_df_to_save, open("../data/Business_locations_split/SUMMARY_CENSUS_DATA_GDF_FIPS_{:02d}.pkl".format(FIPS), "wb"))
 
-business_gdf = load_business_data_geo()
-
-# 1. Seperate business gdf into sub dataframes + Save to file.
-states = list(business_gdf["fldState"].unique())
-state_dfs = [business_gdf[business_gdf["fldState"] == state] for state in states]
-
-for state_abv, state_df in zip(states, state_dfs):
-   pickle.dump(state_df, open(f"../data/BUSINESS_DATA_GDF_FIPS_{state2fips[state_abv]}.pkl", "wb"))
+business_df_to_save.to_csv("../data/Business_locations_split/GEOCODED_BUSINESS_DATA_GDF_FIPS_{:02d}.csv".format(FIPS))
+census_df_to_save.to_csv("../data/Business_locations_split/SUMMARY_CENSUS_DATA_GDF_FIPS_{:02d}.csv".format(FIPS))
 

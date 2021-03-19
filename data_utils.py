@@ -46,10 +46,12 @@ def load_census_block_data(block_id):
         census_blocks_df = census_blocks_df[["GEOID10", "ALAND10", "geometry"]]
         census_blocks_df_pop = census_blocks_df_pop[["BLOCKID10", "POP10"]]
         census_blocks_df_pop.rename(columns={"BLOCKID10":"GEOID10"}, inplace=True)
-        del census_blocks_df_pop, census_blocks_df
         census_blocks = census_blocks_df.merge(census_blocks_df_pop)
+        del census_blocks_df_pop, census_blocks_df
+
         return census_blocks
-    except:
+    except Exception as e:
+        print(e)
         return None
 
 def load_census_blocks_data():

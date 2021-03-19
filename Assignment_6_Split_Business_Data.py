@@ -35,5 +35,5 @@ states = list(business_gdf["fldState"].unique())
 state_dfs = [business_gdf[business_gdf["fldState"] == state] for state in states]
 
 for state_abv, state_df in zip(states, state_dfs):
-   pickle.dump(state_df, open(f"../data/BUSINESS_DATA_GDF_FIPS_{state2fips[state_abv]}.pkl", "wb"))
+   pickle.dump(state_df, open(f"../data/Business_locations_split/BUSINESS_DATA_GDF_FIPS_{state2fips[state_abv]}.pkl", "wb"))
 
